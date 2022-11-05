@@ -7,15 +7,11 @@ import { User } from './models/user'
 
 const app = express()
 
-app.get('/api/signup', async (req: Request, res:Response) => {
+app.use(express.json())
+
+app.post('/api/signup', async (req: Request, res:Response) => {
     try {
-        const user = new User(        {
-            name: "Angel Manuel Góez Giraldo",
-            pwd: "12345",
-            username: "amgoezg",
-            email: "amgoez@gmai.com",
-            userType: "ADMIN"
-        })
+        const user = new User(req.body)
         await user.save()
         res.status(201).send({user})
     } catch (error:any) {
@@ -23,7 +19,18 @@ app.get('/api/signup', async (req: Request, res:Response) => {
     }
 })
 
-app.get('/api/signup/:document', (req: Request, res:Response) => {
+app.post('/api/signin', async (req: Request, res:Response) => {
+    const { email, pwd } = req.body
+    try {
+      const user = await User.findUserByCredentials(email, pwd)
+      const token = await user.generateAuthToken()
+      res.send({token})
+    } catch (error:any) {
+      throw new BadRequestError(error.message)  
+    }
+})
+
+app.post('/api/signup/:document', (req: Request, res:Response) => {
     const document = req.params.document
     const database:any = {
         "123": "Yordan", 
