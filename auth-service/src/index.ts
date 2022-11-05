@@ -4,6 +4,7 @@ import { MongooseConnection } from './db/mongoose';
 import 'express-async-errors'
 
 import { User } from './models/user'
+import { productRouter } from './routes/product-routes';
 
 const app = express()
 
@@ -39,6 +40,7 @@ app.post('/api/signup/:document', (req: Request, res:Response) => {
     res.send(`<h1>Hola mundo, ${database[document]}</h1>`)
 })
 
+app.use('/products', productRouter)
 
 app.use(errorHandler);
 
